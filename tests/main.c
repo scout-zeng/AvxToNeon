@@ -13,7 +13,7 @@ int main()
     unsigned int i;
     int passCount = 0;
     int failCount = 0;
-    for (i = UT_MM_EXTRACT_EPI32; i <= UT_MM_MALLOC; i++) {
+    for (i = UT_MM_EXTRACT_EPI32; i <= UT_MM256_SET_EPI32; i++) {
         int flag = 0;
         const char *s = RunTest((InstructionTest)i, &flag);
         printf("Running Test %s\n", s);

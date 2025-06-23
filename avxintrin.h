@@ -82,27 +82,6 @@ typedef struct {
 #define _CMP_GT_OQ 0x1e
 #define _CMP_TRUE_US 0x1f
 
-FORCE_INLINE __m256i _mm256_setzero_si256(void)
-{
-    __m256i ret;
-    ret.vect_s32[0] = ret.vect_s32[1] = vdupq_n_s32(0);
-    return ret;
-}
-
-FORCE_INLINE __m256 _mm256_setzero_ps(void)
-{
-    __m256 ret;
-    ret.vect_f32[0] = ret.vect_f32[1] = vdupq_n_f32(0.0f);
-    return ret;
-}
-
-FORCE_INLINE __m256d _mm256_setzero_pd(void)
-{
-    __m256d ret;
-    ret.vect_f64[0] = ret.vect_f64[1] = vdupq_n_f64(0.0);
-    return ret;
-}
-
 FORCE_INLINE void _mm256_convert_to_int32(int32_t* ptr_a, __m256i a)
 {
     ptr_a[0] = vgetq_lane_s32(a.vect_s32[0], 0);
@@ -161,7 +140,7 @@ FORCE_INLINE __m256i _mm256_div_epi16(__m256i a, __m256i b)
 
 FORCE_INLINE __m256i _mm256_div_epi32(__m256i a, __m256i b)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     int32_t ptr_a[8], ptr_b[8], ptr_r[8];
     _mm256_convert_to_int32(ptr_a, a);
     _mm256_convert_to_int32(ptr_b, b);
@@ -186,7 +165,7 @@ FORCE_INLINE __m256i _mm256_div_epi32(__m256i a, __m256i b)
 
 FORCE_INLINE __m256i _mm256_div_epi64(__m256i a, __m256i b)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     int64_t ptr_a[4], ptr_b[4], ptr_r[4];
     _mm256_convert_to_int64(ptr_a, a);
     _mm256_convert_to_int64(ptr_b, b);
@@ -218,7 +197,7 @@ FORCE_INLINE __m256i _mm256_div_epu16(__m256i a, __m256i b)
 
 FORCE_INLINE __m256i _mm256_div_epu32(__m256i a, __m256i b)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     uint32_t ptr_a[8], ptr_b[8], ptr_r[8];
     _mm256_convert_to_uint32(ptr_a, a);
     _mm256_convert_to_uint32(ptr_b, b);
@@ -243,7 +222,7 @@ FORCE_INLINE __m256i _mm256_div_epu32(__m256i a, __m256i b)
 
 FORCE_INLINE __m256i _mm256_div_epu64(__m256i a, __m256i b)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     uint64_t ptr_a[4], ptr_b[4], ptr_r[4];
     _mm256_convert_to_uint64(ptr_a, a);
     _mm256_convert_to_uint64(ptr_b, b);
@@ -356,7 +335,7 @@ FORCE_INLINE __m256d _mm256_add_pd(__m256d a, __m256d b)
 
 FORCE_INLINE __m256 _mm256_addsub_ps (__m256 a, __m256 b)
 {
-    __m256 c = _mm256_setzero_ps();
+    __m256 c;
     __asm__ __volatile__ (
         "fsub %2.4s, %0.4s, %4.4s        \n\t"
         "fsub %3.4s, %1.4s, %5.4s        \n\t"
@@ -373,7 +352,7 @@ FORCE_INLINE __m256 _mm256_addsub_ps (__m256 a, __m256 b)
 }
 FORCE_INLINE __m256d _mm256_addsub_pd (__m256d a, __m256d b)
 {
-    __m256d c = _mm256_setzero_pd();
+    __m256d c;
     __asm__ __volatile__ (
         "fsub %2.2d, %0.2d, %4.2d        \n\t"
         "fsub %3.2d, %1.2d, %5.2d        \n\t"
@@ -613,7 +592,7 @@ FORCE_INLINE __m256i _mm256_mullo_epi32(__m256i a, __m256i b)
 
 FORCE_INLINE __m256i _mm256_mullo_epi64(__m256i a, __m256i b)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     int64_t ptr_a[4], ptr_b[4], ptr_r[4];
     _mm256_convert_to_int64(ptr_a, a);
     _mm256_convert_to_int64(ptr_b, b);
@@ -651,26 +630,323 @@ FORCE_INLINE void _mm256_zeroupper(void)
     return;  // 256位寄存器高128位置0，arm寄存器最大128位，该接口不作为
 }
 
+#define MM256_SLL_VECT_S32_SET(res, a, c)\
+    res.vect_s32[0] = vshlq_n_s32(a.vect_s32[0], c); \
+    res.vect_s32[1] = vshlq_n_s32(a.vect_s32[1], c);
 FORCE_INLINE __m256i _mm256_sll_epi32(__m256i a, __m128i count)
 {
     long long c = count.vect_s64[0];
     __m256i result_m256i;
     if (likely(c >= 0 && c < 32)) {
-        result_m256i.vect_s32[0] = vshlq_n_s32(a.vect_s32[0], c);
-        result_m256i.vect_s32[1] = vshlq_n_s32(a.vect_s32[1], c);
+        switch (c)
+        {
+        case 0:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 0);
+            break;
+        case 1:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 15);
+            break;
+        case 16:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 16);
+            break;
+        case 17:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 17);
+            break;
+        case 18:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 18);
+            break;
+        case 19:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 19);
+            break;
+        case 20:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 20);
+            break;
+        case 21:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 21);
+            break;
+        case 22:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 22);
+            break;
+        case 23:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 23);
+            break;
+        case 24:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 24);
+            break;
+        case 25:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 25);
+            break;
+        case 26:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 26);
+            break;
+        case 27:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 27);
+            break;
+        case 28:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 28);
+            break;
+        case 29:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 29);
+            break;
+        case 30:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 30);
+            break;
+        case 31:
+            MM256_SLL_VECT_S32_SET(result_m256i, a, 31);
+            break;
+        }
     } else {
         result_m256i.vect_s32[0] = vdupq_n_s32(0);
         result_m256i.vect_s32[1] = vdupq_n_s32(0);
     } 
     return result_m256i;
 }
+
+#define MM256_SLL_VECT_S64_SET(res, a, c)\
+    res.vect_s64[0] = vshlq_n_s64(a.vect_s64[0], c); \
+    res.vect_s64[1] = vshlq_n_s64(a.vect_s64[1], c);
 FORCE_INLINE __m256i _mm256_sll_epi64(__m256i a, __m128i count)
 {
     long long c = count.vect_s64[0];
     __m256i result_m256i;
     if (likely(c >= 0 && c < 64)) {
-        result_m256i.vect_s64[0] = vshlq_n_s64(a.vect_s64[0], c);
-        result_m256i.vect_s64[1] = vshlq_n_s64(a.vect_s64[1], c);
+        switch (c)
+        {
+        case 0:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 0);
+            break;
+        case 1:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 15);
+            break;
+        case 16:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 16);
+            break;
+        case 17:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 17);
+            break;
+        case 18:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 18);
+            break;
+        case 19:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 19);
+            break;
+        case 20:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 20);
+            break;
+        case 21:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 21);
+            break;
+        case 22:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 22);
+            break;
+        case 23:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 23);
+            break;
+        case 24:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 24);
+            break;
+        case 25:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 25);
+            break;
+        case 26:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 26);
+            break;
+        case 27:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 27);
+            break;
+        case 28:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 28);
+            break;
+        case 29:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 29);
+            break;
+        case 30:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 30);
+            break;
+        case 31:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 31);
+            break;
+        case 32:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 32);
+            break;
+        case 33:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 33);
+            break;
+        case 34:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 34);
+            break;
+        case 35:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 35);
+            break;
+        case 36:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 36);
+            break;
+        case 37:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 37);
+            break;
+        case 38:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 38);
+            break;
+        case 39:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 39);
+            break;
+        case 40:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 40);
+            break;
+        case 41:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 41);
+            break;
+        case 42:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 42);
+            break;
+        case 43:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 43);
+            break;
+        case 44:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 44);
+            break;
+        case 45:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 45);
+            break;
+        case 46:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 46);
+            break;
+        case 47:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 47);
+            break;
+        case 48:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 48);
+            break;
+        case 49:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 49);
+            break;
+        case 50:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 50);
+            break;
+        case 51:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 51);
+            break;
+        case 52:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 52);
+            break;
+        case 53:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 53);
+            break;
+        case 54:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 54);
+            break;
+        case 55:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 55);
+            break;
+        case 56:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 56);
+            break;
+        case 57:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 57);
+            break;
+        case 58:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 58);
+            break;
+        case 59:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 59);
+            break;
+        case 60:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 60);
+            break;
+        case 61:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 61);
+            break;
+        case 62:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 62);
+            break;
+        case 63:
+            MM256_SLL_VECT_S64_SET(result_m256i, a, 63);
+            break;
+        }
     } else {
         result_m256i.vect_s64[0] = vdupq_n_s64(0);
         result_m256i.vect_s64[1] = vdupq_n_s64(0);
@@ -678,12 +954,112 @@ FORCE_INLINE __m256i _mm256_sll_epi64(__m256i a, __m128i count)
     return result_m256i;
 }
 
+#define MM256_SLLI_VECT_S32_SET(res, a, imm8) \
+    res.vect_s32[0] = vshlq_n_s32(a.vect_s32[0], imm8); \
+    res.vect_s32[1] = vshlq_n_s32(a.vect_s32[1], imm8);
 FORCE_INLINE __m256i _mm256_slli_epi32(__m256i a, int imm8)
 {
     __m256i result_m256i;
     if (likely(imm8 >= 0 && imm8 < 32)) {
-        result_m256i.vect_s32[0] = vshlq_n_s32(a.vect_s32[0], imm8);
-        result_m256i.vect_s32[1] = vshlq_n_s32(a.vect_s32[1], imm8);
+        switch (imm8)
+        {
+        case 0:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 0);
+            break;
+        case 1:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 15);
+            break;
+        case 16:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 16);
+            break;
+        case 17:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 17);
+            break;
+        case 18:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 18);
+            break;
+        case 19:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 19);
+            break;
+        case 20:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 20);
+            break;
+        case 21:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 21);
+            break;
+        case 22:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 22);
+            break;
+        case 23:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 23);
+            break;
+        case 24:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 24);
+            break;
+        case 25:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 25);
+            break;
+        case 26:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 26);
+            break;
+        case 27:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 27);
+            break;
+        case 28:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 28);
+            break;
+        case 29:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 29);
+            break;
+        case 30:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 30);
+            break;
+        case 31:
+            MM256_SLLI_VECT_S32_SET(result_m256i, a, 31);
+            break;
+        }
     } else {
         result_m256i.vect_s32[0] = vdupq_n_s32(0);
         result_m256i.vect_s32[1] = vdupq_n_s32(0);
@@ -691,12 +1067,209 @@ FORCE_INLINE __m256i _mm256_slli_epi32(__m256i a, int imm8)
     return result_m256i;
 }
 
+
+#define MM256_SLLI_VECT_S64_SET(res, a, imm8) \
+    res.vect_s64[0] = vshlq_n_s64(a.vect_s64[0], imm8); \
+    res.vect_s64[1] = vshlq_n_s64(a.vect_s64[1], imm8);
 FORCE_INLINE __m256i _mm256_slli_epi64(__m256i a, int imm8)
 {
     __m256i result_m256i;
     if (likely(imm8 >= 0 && imm8 < 64)) {
-        result_m256i.vect_s64[0] = vshlq_n_s64(a.vect_s64[0], imm8);
-        result_m256i.vect_s64[1] = vshlq_n_s64(a.vect_s64[1], imm8);
+        switch (imm8)
+        {
+        case 0:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 0);
+            break;
+        case 1:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 15);
+            break;
+        case 16:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 16);
+            break;
+        case 17:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 17);
+            break;
+        case 18:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 18);
+            break;
+        case 19:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 19);
+            break;
+        case 20:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 20);
+            break;
+        case 21:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 21);
+            break;
+        case 22:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 22);
+            break;
+        case 23:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 23);
+            break;
+        case 24:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 24);
+            break;
+        case 25:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 25);
+            break;
+        case 26:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 26);
+            break;
+        case 27:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 27);
+            break;
+        case 28:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 28);
+            break;
+        case 29:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 29);
+            break;
+        case 30:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 30);
+            break;
+        case 31:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 31);
+            break;
+        case 32:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 32);
+            break;
+        case 33:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 33);
+            break;
+        case 34:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 34);
+            break;
+        case 35:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 35);
+            break;
+        case 36:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 36);
+            break;
+        case 37:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 37);
+            break;
+        case 38:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 38);
+            break;
+        case 39:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 39);
+            break;
+        case 40:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 40);
+            break;
+        case 41:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 41);
+            break;
+        case 42:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 42);
+            break;
+        case 43:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 43);
+            break;
+        case 44:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 44);
+            break;
+        case 45:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 45);
+            break;
+        case 46:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 46);
+            break;
+        case 47:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 47);
+            break;
+        case 48:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 48);
+            break;
+        case 49:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 49);
+            break;
+        case 50:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 50);
+            break;
+        case 51:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 51);
+            break;
+        case 52:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 52);
+            break;
+        case 53:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 53);
+            break;
+        case 54:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 54);
+            break;
+        case 55:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 55);
+            break;
+        case 56:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 56);
+            break;
+        case 57:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 57);
+            break;
+        case 58:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 58);
+            break;
+        case 59:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 59);
+            break;
+        case 60:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 60);
+            break;
+        case 61:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 61);
+            break;
+        case 62:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 62);
+            break;
+        case 63:
+            MM256_SLLI_VECT_S64_SET(result_m256i, a, 63);
+            break;
+        }
     } else {
         result_m256i.vect_s64[0] = vdupq_n_s64(0);
         result_m256i.vect_s64[1] = vdupq_n_s64(0);
@@ -719,13 +1292,62 @@ FORCE_INLINE __m256i _mm256_srli_epi64(__m256i a, int imm8)
     return result_m256i;
 }
 
+#define MM256_SLLI_VECT_S8_SET(res, a, imm8) \
+    res.vect_s8[0] = vextq_s8(vdupq_n_s8(0), a.vect_s8[0], 16 - imm8); \
+    res.vect_s8[1] = vextq_s8(vdupq_n_s8(0), a.vect_s8[1], 16 - imm8);
 FORCE_INLINE __m256i _mm256_slli_si256(__m256i a, const int imm8)
 {
     assert(imm8 >=0 && imm8 <256);
     __m256i result_m256i;
     if (likely(imm8 > 0 && imm8 <= 15)) {
-        result_m256i.vect_s8[0] = vextq_s8(vdupq_n_s8(0), a.vect_s8[0], 16 - imm8);
-        result_m256i.vect_s8[1] = vextq_s8(vdupq_n_s8(0), a.vect_s8[1], 16 - imm8);
+        switch (imm8)
+        {
+        case 1:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SLLI_VECT_S8_SET(result_m256i, a, 15);
+            break;
+        }
     } else if (imm8 == 0) {
         result_m256i = a;
     } else {
@@ -735,13 +1357,63 @@ FORCE_INLINE __m256i _mm256_slli_si256(__m256i a, const int imm8)
     return result_m256i;
 }
 
+#define MM256_SRLI_VECT_S8_SET(res, a, imm8) \
+    res.vect_s8[0] = vextq_s8(a.vect_s8[0], vdupq_n_s8(0), imm8); \
+    res.vect_s8[1] = vextq_s8(a.vect_s8[1], vdupq_n_s8(0), imm8);
+
 FORCE_INLINE __m256i _mm256_srli_si256(__m256i a, const int imm8)
 {
     assert(imm8 >=0 && imm8 <256);
     __m256i result_m256i;
     if (likely(imm8 > 0 && imm8 <= 15)) {
-        result_m256i.vect_s8[0] = vextq_s8(a.vect_s8[0], vdupq_n_s8(0), imm8);
-        result_m256i.vect_s8[1] = vextq_s8(a.vect_s8[1], vdupq_n_s8(0), imm8);
+        switch (imm8)
+        {
+        case 1:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 1);
+            break;
+        case 2:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 2);
+            break;
+        case 3:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 3);
+            break;
+        case 4:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 4);
+            break;
+        case 5:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 5);
+            break;
+        case 6:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 6);
+            break;
+        case 7:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 7);
+            break;
+        case 8:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 8);
+            break;
+        case 9:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 9);
+            break;
+        case 10:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 10);
+            break;
+        case 11:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 11);
+            break;
+        case 12:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 12);
+            break;
+        case 13:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 13);
+            break;
+        case 14:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 14);
+            break;
+        case 15:
+            MM256_SRLI_VECT_S8_SET(result_m256i, a, 15);
+            break;
+        }
     } else if (imm8 == 0) {
         result_m256i = a;
     } else {
@@ -898,7 +1570,7 @@ FORCE_INLINE __m128d _mm256_extractf128_pd (__m256d a, const int imm8)
 
 FORCE_INLINE __m256i _mm256_permute4x64_epi64(__m256i a, const int imm8)
 {
-    __m256i res = _mm256_setzero_si256();
+    __m256i res;
     int64_t ptr_a[4];
     vst1q_s64(ptr_a, a.vect_s64[0]);
     vst1q_s64(ptr_a + 2, a.vect_s64[1]);
@@ -910,30 +1582,6 @@ FORCE_INLINE __m256i _mm256_permute4x64_epi64(__m256i a, const int imm8)
     res.vect_s64[0] = vsetq_lane_s64(ptr_a[id1], res.vect_s64[0], 1);
     res.vect_s64[1] = vsetq_lane_s64(ptr_a[id2], res.vect_s64[1], 0);
     res.vect_s64[1] = vsetq_lane_s64(ptr_a[id3], res.vect_s64[1], 1);
-    return res;
-}
-
-FORCE_INLINE __m256i _mm256_permute2f128_si256 (__m256i a, __m256i b, int imm8)
-{
-    __m256i res;
-    int bit_0 = imm8 & 0x1, bit_1 = imm8 & 0x2, bit_3 = imm8 & 0x8;
-    if (bit_1 == 0) {
-        res.vect_s32[0] = a.vect_s32[bit_0];
-    } else {
-        res.vect_s32[0] = b.vect_s32[bit_0];
-    }
-    if (bit_3) {
-        res.vect_s32[0] = vdupq_n_s32(0);
-    }
-    bit_0 = (imm8 & 0x10) >> 4, bit_1 = imm8 & 0x20, bit_3 = imm8 & 0x80;
-    if (bit_1 == 0) {
-        res.vect_s32[1] = a.vect_s32[bit_0];
-    } else {
-        res.vect_s32[1] = b.vect_s32[bit_0];
-    }
-    if (bit_3) {
-        res.vect_s32[1] = vdupq_n_s32(0);
-    }
     return res;
 }
 
@@ -975,6 +1623,27 @@ FORCE_INLINE __m256d _mm256_set_pd(double e3, double e2, double e1, double e0)
     SET64x2(res_m256d.vect_f64[0], e0, e1);
     SET64x2(res_m256d.vect_f64[1], e2, e3);
     return res_m256d;
+}
+
+FORCE_INLINE __m256i _mm256_setzero_si256(void)
+{
+    __m256i ret;
+    ret.vect_s32[0] = ret.vect_s32[1] = vdupq_n_s32(0);
+    return ret;
+}
+
+FORCE_INLINE __m256 _mm256_setzero_ps(void)
+{
+    __m256 ret;
+    ret.vect_f32[0] = ret.vect_f32[1] = vdupq_n_f32(0.0f);
+    return ret;
+}
+
+FORCE_INLINE __m256d _mm256_setzero_pd(void)
+{
+    __m256d ret;
+    ret.vect_f64[0] = ret.vect_f64[1] = vdupq_n_f64(0.0);
+    return ret;
 }
 
 FORCE_INLINE __m256i _mm256_set1_epi8(int8_t a)
@@ -1022,12 +1691,6 @@ FORCE_INLINE void _mm256_storeu_si256(__m256i* mem_addr, __m256i a)
 {
     vst1q_s8((int8_t*)mem_addr, a.vect_s8[0]);
     vst1q_s8((int8_t*)mem_addr + 16, a.vect_s8[1]);
-}
-
-FORCE_INLINE void _mm256_stream_si256 (__m256i * mem_addr, __m256i a)
-{
-    vst1q_s32((int32_t*)mem_addr, a.vect_s32[0]);
-    vst1q_s32((int32_t*)mem_addr + 4, a.vect_s32[1]);
 }
 
 FORCE_INLINE __m256i _mm256_load_si256(__m256i const* mem_addr)
@@ -1238,8 +1901,8 @@ FORCE_INLINE __m256d _mm256_blendv_pd(__m256d a, __m256d b, __m256d mask)
 {
     __m256d result_m256d;
     uint64x2_t vect_flag[2];
-    vect_flag[0] = vcgeq_s64((int64x2_t)mask.vect_f64[0], vdupq_n_s64(0));
-    vect_flag[1] = vcgeq_s64((int64x2_t)mask.vect_f64[1], vdupq_n_s64(0));
+    vect_flag[0] = vcgeq_f64(mask.vect_f64[0], vdupq_n_f64(0));
+    vect_flag[1] = vcgeq_f64(mask.vect_f64[1], vdupq_n_f64(0));
     result_m256d.vect_f64[0] = vbslq_f64(vect_flag[0], a.vect_f64[0], b.vect_f64[0]);
     result_m256d.vect_f64[1] = vbslq_f64(vect_flag[1], a.vect_f64[1], b.vect_f64[1]);
     return result_m256d;
@@ -1249,8 +1912,8 @@ FORCE_INLINE __m256 _mm256_blendv_ps(__m256 a, __m256 b, __m256 mask)
 {
     __m256 result_m256;
     uint32x4_t vect_flag[2];
-    vect_flag[0] = vcgeq_s32((int32x4_t)mask.vect_f32[0], vdupq_n_s32(0));
-    vect_flag[1] = vcgeq_s32((int32x4_t)mask.vect_f32[1], vdupq_n_s32(0));
+    vect_flag[0] = vcgeq_f32(mask.vect_f32[0], vdupq_n_f32(0));
+    vect_flag[1] = vcgeq_f32(mask.vect_f32[1], vdupq_n_f32(0));
     result_m256.vect_f32[0] = vbslq_f32(vect_flag[0], a.vect_f32[0], b.vect_f32[0]);
     result_m256.vect_f32[1] = vbslq_f32(vect_flag[1], a.vect_f32[1], b.vect_f32[1]);
     return result_m256;
@@ -1317,10 +1980,32 @@ FORCE_INLINE __m256 _mm256_insertf128_ps(__m256 a, __m128 b, int imm8)
 FORCE_INLINE __m256i _mm256_insert_epi32 (__m256i a, __int32 i, const int index)
 {
     assert(index >= 0 && index <= 7);
-    if (index > 3) {
-        a.vect_s32[1] = vsetq_lane_s32(i, a.vect_s32[1], index & 3);
-    } else {
-        a.vect_s32[0] = vsetq_lane_s32(i, a.vect_s32[0], index);
+    switch (index)
+    {
+    case 0:
+        a.vect_s32[0] = vsetq_lane_s32(i, a.vect_s32[0], 0);
+        break;
+    case 1:
+        a.vect_s32[0] = vsetq_lane_s32(i, a.vect_s32[0], 1);
+        break;
+    case 2:
+        a.vect_s32[0] = vsetq_lane_s32(i, a.vect_s32[0], 2);
+        break;
+    case 3:
+        a.vect_s32[0] = vsetq_lane_s32(i, a.vect_s32[0], 3);
+        break;
+    case 4:
+        a.vect_s32[1] = vsetq_lane_s32(i, a.vect_s32[1], 0);
+        break;
+    case 5:
+        a.vect_s32[1] = vsetq_lane_s32(i, a.vect_s32[1], 1);
+        break;
+    case 6:
+        a.vect_s32[1] = vsetq_lane_s32(i, a.vect_s32[1], 2);
+        break;
+    case 7:
+        a.vect_s32[1] = vsetq_lane_s32(i, a.vect_s32[1], 3);
+        break;
     }
     return a;
 }
@@ -1328,20 +2013,24 @@ FORCE_INLINE __m256i _mm256_insert_epi32 (__m256i a, __int32 i, const int index)
 FORCE_INLINE __m256i _mm256_insert_epi64 (__m256i a, __int64 i, const int index)
 {
     assert(index >= 0 && index <= 3);
-    if (index > 1) {
-        a.vect_s64[1] = vsetq_lane_s64(i, a.vect_s64[1], index & 1);
-    } else {
-        a.vect_s64[0] = vsetq_lane_s64(i, a.vect_s64[0], index);
+    switch (index)
+    {
+    case 0:
+        a.vect_s64[0] = vsetq_lane_s64(i, a.vect_s64[0], 0);
+        break;
+    case 1:
+        a.vect_s64[0] = vsetq_lane_s64(i, a.vect_s64[0], 1);
+        break;
+    case 2:
+        a.vect_s64[1] = vsetq_lane_s64(i, a.vect_s64[1], 0);
+        break;
+    case 3:
+        a.vect_s64[1] = vsetq_lane_s64(i, a.vect_s64[1], 1);
+        break;
+    default:
+        break;
     }
     return a;
-}
-
-FORCE_INLINE __m256i _mm256_cmpgt_epi32 (__m256i a, __m256i b)
-{
-    __m256i res;
-    res.vect_u32[0] = vcgtq_s32(a.vect_s32[0], b.vect_s32[0]);
-    res.vect_u32[1] = vcgtq_s32(a.vect_s32[1], b.vect_s32[1]);
-    return res;
 }
 
 FORCE_INLINE __m256i _mm256_cmpeq_epi32 (__m256i a, __m256i b)
@@ -2193,76 +2882,4 @@ FORCE_INLINE __m256 _mm256_cmp_ps(__m256 a, __m256 b, const int imm8)
     dst.vect_f32[0] = vreinterpretq_f32_u32(g_FunListCmp256Ps[imm8].cmpFun(a.vect_f32[0], b.vect_f32[0]));
     dst.vect_f32[1] = vreinterpretq_f32_u32(g_FunListCmp256Ps[imm8].cmpFun(a.vect_f32[1], b.vect_f32[1]));
     return dst;
-}
-
-FORCE_INLINE __m256i _mm256_load_epi32 (void const* mem_addr)
-{
-    __m256i res;
-    res.vect_s32[0] = vld1q_s32((const int32_t *)mem_addr);
-    res.vect_s32[1] = vld1q_s32((const int32_t *)mem_addr + 4);
-    return res;
-}
-
-FORCE_INLINE __m256i _mm256_load_epi64 (void const* mem_addr)
-{
-    __m256i res;
-    res.vect_s64[0] = vld1q_s64((const int64_t *)mem_addr);
-    res.vect_s64[1] = vld1q_s64((const int64_t *)mem_addr + 2);
-    return res;
-}
-
-FORCE_INLINE __m256d _mm256_load_pd (double const * mem_addr)
-{
-    __m256d res;
-    res.vect_f64[0] = vld1q_f64((const double *)mem_addr);
-    res.vect_f64[1] = vld1q_f64((const double *)mem_addr + 2);
-    return res;
-}
-
-FORCE_INLINE __m256 _mm256_load_ps (float const * mem_addr)
-{
-    __m256 res;
-    res.vect_f32[0] = vld1q_f32((const float *)mem_addr);
-    res.vect_f32[1] = vld1q_f32((const float *)mem_addr + 4);
-    return res;
-}
-
-FORCE_INLINE void _mm256_store_epi32 (void* mem_addr, __m256i a)
-{
-    vst1q_s32((int32_t *)mem_addr, a.vect_s32[0]);
-    vst1q_s32((int32_t *)mem_addr + 4, a.vect_s32[1]);
-}
-
-FORCE_INLINE void _mm256_store_epi64 (void* mem_addr, __m256i a)
-{
-    vst1q_s64((int64_t *)mem_addr, a.vect_s64[0]);
-    vst1q_s64((int64_t *)mem_addr + 2, a.vect_s64[1]);
-}
-
-FORCE_INLINE void _mm256_store_pd (double * mem_addr, __m256d a)
-{
-    vst1q_f64(mem_addr, a.vect_f64[0]);
-    vst1q_f64(mem_addr + 2, a.vect_f64[1]);
-}
-
-FORCE_INLINE void _mm256_store_ps (float * mem_addr, __m256 a)
-{
-    vst1q_f32(mem_addr, a.vect_f32[0]);
-    vst1q_f32(mem_addr + 4, a.vect_f32[1]);
-}
-
-FORCE_INLINE __m256i _mm256_max_epi32 (__m256i a, __m256i b)
-{
-    __m256i res;
-    res.vect_s32[0] = vmaxq_s32(a.vect_s32[0], b.vect_s32[0]);
-    res.vect_s32[1] = vmaxq_s32(a.vect_s32[1], b.vect_s32[1]);
-    return res;
-}
-
-FORCE_INLINE __m256i _mm256_packs_epi32 (__m256i a, __m256i b)
-{
-    __m256i res;
-    res.vect_s16[0] = vcombine_s16(vqmovn_s32(a.vect_s32[0]), vqmovn_s32(b.vect_s32[0]));
-    res.vect_s16[1] = vcombine_s16(vqmovn_s32(a.vect_s32[1]), vqmovn_s32(b.vect_s32[1]));
-    return res;
 }

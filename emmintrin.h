@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2019. Huawei Technologies Co., Ltd. All rights reserved.
 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@
 #include <arm_neon.h>
 
 #include <math.h>
-#include <stdlib.h>
 #ifdef __cplusplus
 using namespace std;
 #endif
@@ -40,6 +39,8 @@ typedef union {
     uint32x4_t vect_u32;
     uint64x2_t vect_u64;
 } __m128i;
+
+typedef float16x8_t __m128h;
 
 typedef float32x4_t __m128;
 
@@ -349,13 +350,208 @@ FORCE_INLINE __m128i _mm_div_epu16(__m128i a, __m128i b)
     return res_m128i;
 }
 
+#define MM_SLL_VECT_S64_SET(res, a, mc) \
+    res.vect_s64 = vshlq_n_s64(a.vect_s64, mc);
 FORCE_INLINE __m128i _mm_sll_epi64(__m128i a, __m128i count)
 {
     long long c = count.vect_s64[0];
-    int mc = c;
     __m128i result_m128i;
     if (likely(c >= 0 && c < 64)) {
-        result_m128i.vect_s64 = vshlq_n_s64(a.vect_s64, mc);
+        switch (c)
+        {
+        case 0:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 0);
+            break;
+        case 1:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 1);
+            break;
+        case 2:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 2);
+            break;
+        case 3:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 3);
+            break;
+        case 4:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 4);
+            break;
+        case 5:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 5);
+            break;
+        case 6:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 6);
+            break;
+        case 7:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 7);
+            break;
+        case 8:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 8);
+            break;
+        case 9:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 9);
+            break;
+        case 10:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 10);
+            break;
+        case 11:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 11);
+            break;
+        case 12:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 12);
+            break;
+        case 13:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 13);
+            break;
+        case 14:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 14);
+            break;
+        case 15:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 15);
+            break;
+        case 16:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 16);
+            break;
+        case 17:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 17);
+            break;
+        case 18:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 18);
+            break;
+        case 19:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 19);
+            break;
+        case 20:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 20);
+            break;
+        case 21:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 21);
+            break;
+        case 22:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 22);
+            break;
+        case 23:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 23);
+            break;
+        case 24:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 24);
+            break;
+        case 25:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 25);
+            break;
+        case 26:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 26);
+            break;
+        case 27:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 27);
+            break;
+        case 28:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 28);
+            break;
+        case 29:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 29);
+            break;
+        case 30:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 30);
+            break;
+        case 31:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 31);
+            break;
+        case 32:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 32);
+            break;
+        case 33:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 33);
+            break;
+        case 34:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 34);
+            break;
+        case 35:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 35);
+            break;
+        case 36:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 36);
+            break;
+        case 37:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 37);
+            break;
+        case 38:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 38);
+            break;
+        case 39:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 39);
+            break;
+        case 40:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 40);
+            break;
+        case 41:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 41);
+            break;
+        case 42:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 42);
+            break;
+        case 43:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 43);
+            break;
+        case 44:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 44);
+            break;
+        case 45:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 45);
+            break;
+        case 46:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 46);
+            break;
+        case 47:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 47);
+            break;
+        case 48:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 48);
+            break;
+        case 49:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 49);
+            break;
+        case 50:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 50);
+            break;
+        case 51:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 51);
+            break;
+        case 52:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 52);
+            break;
+        case 53:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 53);
+            break;
+        case 54:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 54);
+            break;
+        case 55:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 55);
+            break;
+        case 56:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 56);
+            break;
+        case 57:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 57);
+            break;
+        case 58:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 58);
+            break;
+        case 59:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 59);
+            break;
+        case 60:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 60);
+            break;
+        case 61:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 61);
+            break;
+        case 62:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 62);
+            break;
+        case 63:
+            MM_SLL_VECT_S64_SET(result_m128i, a, 63);
+            break;
+        }
     } else {
         result_m128i.vect_s64 = vdupq_n_s64(0);
     } 
@@ -638,10 +834,10 @@ static int cal_res_word_equal_each(__m128i a, int la, __m128i b, int lb)
 static int aggregate_equal_ordered_8x16(int bound, int la, int lb, __m128i mtx[16])
 {
     int res = 0;
-    int i, j, k;
+    int j, k;
     int m1 = 0x10000 - (1 << la);
-    uint8x8_t vect_mask = vld1_u8(g_mask_epi8);
-    uint8x16_t vect1 = vcombine_u8(vtst_u8(vdup_n_u8(m1), vect_mask), vtst_u8(vdup_n_u8(m1 >> 8), vect_mask));
+    uint8x16_t vect_mask = vld1q_u8(g_mask_epi8);
+    uint8x16_t vect1 = vtstq_u8(vdupq_n_u8(m1), vect_mask);
     uint8x16_t vect_minusone = vdupq_n_u8(-1);
     uint8x16_t vect_zero = vdupq_n_u8(0);
     for (j = 0; j < lb; j++) {
@@ -650,13 +846,16 @@ static int aggregate_equal_ordered_8x16(int bound, int la, int lb, __m128i mtx[1
     for (j = lb; j < bound; j++) {
         mtx[j].vect_u8 = vbslq_u8(vect1, vect_minusone, vect_zero);
     }
-    unsigned char *ptr = (unsigned char*)mtx;
-    for (i = 0; i < bound; i++) {
+    uint8_t enable[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    for (j = 0; j < bound; j++) {
         int val = 1;
-        for (j = 0, k = i; j < bound - i && k < bound; j++, k++) {
-            val &= ptr[k * bound + j];
+        uint8x16_t vect_en = vld1q_u8(enable);
+        for (k = j; k < bound && val == 1; k++) {
+            int t = vaddvq_u8(vandq_u8(mtx[j].vect_u8, vect_en));
+            val = (t == bound - j) ? 1 : 0;
         }
-        res = (val << i) + res;
+        res = (val << j) + res;
+        enable[bound - 1 - j] = 0;
     }
     return res;
 }
@@ -664,7 +863,7 @@ static int aggregate_equal_ordered_8x16(int bound, int la, int lb, __m128i mtx[1
 static int aggregate_equal_ordered_16x8(int bound, int la, int lb, __m128i mtx[16])
 {
     int res = 0;
-    int i, j, k;
+    int j, k;
     int m1 = 0x100 - (1 << la);
     uint16x8_t vect_mask = vld1q_u16(g_mask_epi16);
     uint16x8_t vect1 = vtstq_u16(vdupq_n_u16(m1), vect_mask);
@@ -676,13 +875,16 @@ static int aggregate_equal_ordered_16x8(int bound, int la, int lb, __m128i mtx[1
     for (j = lb; j < bound; j++) {
         mtx[j].vect_u16 = vbslq_u16(vect1, vect_minusone, vect_zero);
     }
-    unsigned short *ptr = (unsigned short*)mtx;
-    for (i = 0; i < bound; i++) {
+    uint16_t enable[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+    for (j = 0; j < bound; j++) {
         int val = 1;
-        for (j = 0, k = i; j < bound - i && k < bound; j++, k++) {
-            val &= ptr[k * bound + j];
+        uint16x8_t vect_en = vld1q_u16(enable);
+        for (k = j; k < bound && val == 1; k++) {
+            int t = vaddvq_u16(vandq_u16(mtx[j].vect_u16, vect_en));
+            val = (t == bound - j) ? 1 : 0;
         }
-        res = (val << i) + res;
+        res = (val << j) + res;
+        enable[bound - 1 - j] = 0;
     }
     return res;
 }
@@ -758,26 +960,27 @@ FORCE_INLINE int neg_fun(int res, int lb, int imm8, int bound)
 
     return res & ((bound == 8) ? 0xFF : 0xFFFF);
 }
+
 FORCE_INLINE int _mm_cmpestri(__m128i a, int la, __m128i b, int lb, const int imm8)
 {
-    int bound = (imm8 & 0x01) ? 8 : 16;
-    __asm__ __volatile__ (
-        "eor w0, %w[a], %w[a], asr31          \n\t"
-        "sub %w[a], w0, %w[a], asr31          \n\t"
-        "eor w1, %w[b], %w[b], asr31          \n\t"
-        "sub %w[b], w1, %w[b], asr31          \n\t"
-        "cmp %w[a], %w[bd]                  \n\t"
-        "csel %w[a], %w[bd], %w[a], gt      \n\t"
-        "cmp %w[b], %w[bd]                  \n\t"
-        "csel %w[b], %w[bd], %w[b], gt      \n\t"
-        :[a]"+r"(la), [b]"+r"(lb)
-        :[bd]"r"(bound)
-        :"w0", "w1"
-    );
+	int bound = (imm8 & 0x01) ? 8 : 16;
+	__asm__ __volatile__(
+		"eor w0, %w[a], %w[a], asr #31      \n\t"
+		"sub %w[a], w0, %w[a], asr #31      \n\t"
+		"eor w1, %w[b], %w[b], asr #31      \n\t"
+		"sub %w[b], w1, %w[b], asr #31      \n\t"
+		"cmp %w[a], %w[bd]                  \n\t"
+		"csel %w[a], %w[bd], %w[a], gt      \n\t"
+		"cmp %w[b], %w[bd]                  \n\t"
+		"csel %w[b], %w[bd], %w[b], gt      \n\t"
+		: [a] "+r"(la), [b]"+r"(lb)
+		: [bd] "r"(bound)
+		: "w0", "w1"
+	);
 
-    int r2 = g_CmpestrFuncList[imm8 & 0x0f].cmpFun(a, la, b, lb);
-    r2 = neg_fun(r2, lb, imm8, bound);
-    return (r2 == 0) ? bound : ((imm8 & 0x40) ? (31 - __builtin_clz(r2)) : __builtin_ctz(r2));
+	int r2 = g_CmpestrFuncList[imm8 & 0x0f].cmpFun(a, la, b, lb);
+	r2 = neg_fun(r2, lb, imm8, bound);
+	return (r2 == 0) ? bound : ((imm8 & 0x40) ? (31 - __builtin_clz(r2)) : __builtin_ctz(r2));
 }
 
 FORCE_INLINE __m128i _mm_cmpestrm(__m128i a, int la, __m128i b, int lb, const int imm8)
@@ -785,10 +988,10 @@ FORCE_INLINE __m128i _mm_cmpestrm(__m128i a, int la, __m128i b, int lb, const in
     __m128i dst;
     int bound = (imm8 & 0x01) ? 8 : 16;
     __asm__ __volatile__ (
-        "eor w0, %w[a], %w[a], asr31          \n\t"
-        "sub %w[a], w0, %w[a], asr31          \n\t"
-        "eor w1, %w[b], %w[b], asr31          \n\t"
-        "sub %w[b], w1, %w[b], asr31          \n\t"
+        "eor w0, %w[a], %w[a], asr #31      \n\t"
+        "sub %w[a], w0, %w[a], asr #31      \n\t"
+        "eor w1, %w[b], %w[b], asr #31      \n\t"
+        "sub %w[b], w1, %w[b], asr #31      \n\t"
         "cmp %w[a], %w[bd]                  \n\t"
         "csel %w[a], %w[bd], %w[a], gt      \n\t"
         "cmp %w[b], %w[bd]                  \n\t"
@@ -822,376 +1025,161 @@ FORCE_INLINE __m128i _mm_cmpestrm(__m128i a, int la, __m128i b, int lb, const in
     return dst;
 }
 
-FORCE_INLINE __m128i _mm_insert_epi32 (__m128i a, int i, const int imm8)
+//FORCE_INLINE __m128i _mm_insert_epi32 (__m128i a, int i, const int imm8)
+//{
+//    assert(imm8 >= 0 && imm8 <= 3);
+//    a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, imm8);
+//    return a;
+//}
+
+FORCE_INLINE __m128 _mm_fmadd_ps(__m128 a, __m128 b, __m128 c)
 {
-    assert(imm8 >= 0 && imm8 <= 3);
-    a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, imm8);
-    return a;
+    return vfmaq_f32(a, b, c);
 }
 
-FORCE_INLINE __m128i _mm_load_epi32 (void const* mem_addr)
+FORCE_INLINE __m128d _mm_fmadd_pd(__m128d a, __m128d b, __m128d c)
 {
-    __m128i res;
-    res.vect_s32 = vld1q_s32((const int32_t *)mem_addr);
-    return res;
+    return vfmaq_f64(a, b, c);
 }
 
-FORCE_INLINE __m128i _mm_load_epi64 (void const* mem_addr)
+FORCE_INLINE __m128 _mm_fmadd_lane_ps(__m128 a, __m128 b, float32x2_t v, const int lane)
 {
-    __m128i res;
-    res.vect_s64 = vld1q_s64((const int64_t *)mem_addr);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_load_si128 (__m128i const* mem_addr)
-{
-    __m128i res;
-    res.vect_s32 = vld1q_s32((const int32_t *)mem_addr);
-    return res;
-}
-
-FORCE_INLINE __m128d _mm_load_pd (double const* mem_addr)
-{
-    __m128d res;
-    res = vld1q_f64((const double *)mem_addr);
-    return res;
-}
-
-FORCE_INLINE __m128 _mm_load_ps (float const* mem_addr)
-{
-    __m128 res;
-    res = vld1q_f32((const float *)mem_addr);
-    return res;
-}
-
-FORCE_INLINE void _mm_store_epi32 (void* mem_addr, __m128i a)
-{
-    vst1q_s32((int32_t *)mem_addr, a.vect_s32);
-}
-
-FORCE_INLINE void _mm_store_epi64 (void* mem_addr, __m128i a)
-{
-    vst1q_s64((int64_t *)mem_addr, a.vect_s64);
-}
-
-FORCE_INLINE void _mm_store_si128 (__m128i* mem_addr, __m128i a)
-{
-    vst1q_s32((int32_t *)mem_addr, a.vect_s32);
-}
-
-FORCE_INLINE void _mm_store_pd (double* mem_addr, __m128d a)
-{
-    vst1q_f64(mem_addr, a);
-}
-
-FORCE_INLINE void _mm_store_ps (float* mem_addr, __m128 a)
-{
-    vst1q_f32(mem_addr, a);
-}
-
-FORCE_INLINE __m128i _mm_set1_epi8(char w)
-{
-    __m128i res;
-    res.vect_s8 = vdupq_n_s8(w);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_set1_epi16(short a)
-{
-    __m128i res;
-    res.vect_s16 = vdupq_n_s16(a);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_set1_epi32(int _i)
-{
-    __m128i res;
-    res.vect_s32 = vdupq_n_s32(_i);
-    return res;
-}
-
-FORCE_INLINE __m128 _mm_set1_ps (float a)
-{
-    __m128 res;
-    res = vdupq_n_f32(a);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_cmpeq_epi8 (__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_u8 = vceqq_s8(a.vect_s8, b.vect_s8);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_cmpeq_epi32(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_u32 = vceqq_s32(a.vect_s32, b.vect_s32);
-    return res;
-}
-
-FORCE_INLINE void _mm_storeu_si128(__m128i *p, __m128i a)
-{
-    vst1q_s32((int32_t*) p, a.vect_s32);
-}
-
-FORCE_INLINE __m128i _mm_loadu_si128(const __m128i *p)
-{
-    __m128i res;
-    res.vect_s32 = vld1q_s32((const int32_t *)p);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_and_si128(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s32 = vandq_s32(a.vect_s32, b.vect_s32);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_or_si128(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s32 = vorrq_s32(a.vect_s32, b.vect_s32);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_xor_si128(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s32 = veorq_s32(a.vect_s32, b.vect_s32);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_andnot_si128(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s32 = vbicq_s32(b.vect_s32, a.vect_s32);
-    return res;
-}
-
-FORCE_INLINE __m128 _mm_castsi128_ps(__m128i a)
-{
-    __m128 res;
-    res = vreinterpretq_f32_s32(a.vect_s32);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_max_epu8(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_u8 = vmaxq_u8(a.vect_u8, b.vect_u8);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_min_epu8(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_u8 = vminq_u8(a.vect_u8, b.vect_u8);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_sub_epi8(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s8 = vsubq_s8(a.vect_s8, b.vect_s8);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_adds_epu8(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_u8 = vqaddq_u8(a.vect_u8, b.vect_u8);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_adds_epi16(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s16 = vqaddq_s16(a.vect_s16, b.vect_s16);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_setzero_si128()
-{
-    __m128i res;
-    res.vect_s32 = vdupq_n_s32(0);
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_slli_si128(__m128i a, const int imm8)
-{
-	__m128i res;
-	if (imm8 > 0 && imm8 <= 15) {
-		int8x16_t zero = vdupq_n_s8(0);
-		__asm__ __volatile__ (
-			"ext %0.16b, %1.16b, %2.16b, #%3"
-			: "=w"(res.vect_s8)
-			: "w"(zero), "w"(a.vect_s8), "i"(16 - imm8)
-			: /*No clobbers */);
-	} else if (imm8 == 0) {
-		res = a;
-	} else {
-		res.vect_s8 = vdupq_n_s8(0);
-	}
-	return res;
-}
-
-FORCE_INLINE __m128i _mm_srli_si128 (__m128i a, int imm8)
-{
-    assert(imm8 >=0 && imm8 < 256);
-    __m128i res;
-    if (likely(imm8 > 0 && imm8 <= 15)) {
-        res.vect_s8 = vextq_s8(a.vect_s8, vdupq_n_s8(0), (imm8));
-    } else if (imm8 == 0) {
-        res = a;
-    } else {
-        res.vect_s8 = vdupq_n_s8(0);
+    assert(lane == 0 || lane == 1);
+    __m128 res = (float32x4_t){ 0.0f, 0.0f, 0.0f, 0.0f };
+    if (lane == 0)
+    {
+        res = vfmaq_lane_f32(a, b, v, 0);
+    }
+    if (lane == 1)
+    {
+        res = vfmaq_lane_f32(a, b, v, 1);
     }
     return res;
 }
 
-FORCE_INLINE __m128i _mm_slli_epi32 (__m128i a, int imm8)
+FORCE_INLINE __m128d _mm_fmadd_lane_pd(__m128d a, __m128d b, float64x1_t v)
 {
-    __m128i res;
-    if (likely(imm8 >= 0 && imm8 < 32)) {
-        res.vect_s32 = vshlq_n_s32(a.vect_s32, imm8);
-    } else {
-        res.vect_s32 = vdupq_n_s32(0);
-    } 
+    return vfmaq_lane_f64(a, b, v, 0);
+}
+
+FORCE_INLINE __m128 _mm_fmadd_laneq_ps(__m128 a, __m128 b, __m128 v, const int lane)
+{
+    assert(lane >= 0 && lane <= 3);
+    __m128 res = (__m128){ 0.0f, 0.0f, 0.0f, 0.0f };
+    switch (lane)
+    {
+    case 0:
+        res= vfmaq_laneq_f32(a, b, v, 0);
+        break;
+    case 1:
+        res = vfmaq_laneq_f32(a, b, v, 1);
+        break;
+    case 2:
+        res = vfmaq_laneq_f32(a, b, v, 2);
+        break;
+    case 3:
+        res = vfmaq_laneq_f32(a, b, v, 3);
+        break;
+    default:
+        break;
+    }
     return res;
 }
 
-FORCE_INLINE __m128i _mm_slli_epi64 (__m128i a, int imm8)
+FORCE_INLINE __m128d _mm_fmadd_laneq_pd(__m128d a, __m128d b, __m128d v, const int lane)
 {
-    __m128i res;
-    if (likely(imm8 >= 0 && imm8 < 64)) {
-        res.vect_s64 = vshlq_n_s64(a.vect_s64, imm8);
-    } else {
-        res.vect_s64 = vdupq_n_s64(0);
-    } 
+    assert(lane == 0 || lane == 1);
+    __m128d res = vdupq_n_f64(0.0);
+    switch (lane)
+    {
+    case 0:
+        res = vfmaq_laneq_f64(a, b, v, 0);
+        break;
+    case 1:
+        res = vfmaq_laneq_f64(a, b, v, 1);
+        break;
+    default:
+        break;
+    }
     return res;
 }
 
-FORCE_INLINE __m128i _mm_srli_epi64 (__m128i a, int imm8)
+FORCE_INLINE __m128h _mm_fmadd_n_ph(__m128h a, __m128h b, float16_t n)
 {
-    __m128i res;
-    if (likely(imm8 >= 0 && imm8 < 64)) {
-        int64x2_t vect_imm = vdupq_n_s64(-imm8);
-        res.vect_u64 = vshlq_u64(a.vect_u64, vect_imm);
-    } else {
-        res.vect_u64 = vdupq_n_u64(0);
-    } 
+    return vfmaq_n_f16(a, b, n);
+}
+
+FORCE_INLINE __m128 _mm_fmadd_n_ps(__m128 a, __m128 b, float32_t n)
+{
+    return vfmaq_n_f32(a, b, n);
+}
+
+FORCE_INLINE __m128d _mm_fmadd_n_pd(__m128d a, __m128d b, float64_t n)
+{
+    return vfmaq_n_f64(a, b, n);
+}
+
+FORCE_INLINE __m128h _mm_fmadd_ph(__m128h a, __m128h b, __m128h c)
+{
+    return vfmaq_f16(a, b, c);
+}
+
+FORCE_INLINE __m128h _mm_fmadd_lane_ph(__m128h a, __m128h b, float16x4_t v, const int lane)
+{
+    assert(lane >= 0 && lane <= 3);
+    __m128h res = vdupq_n_f16(0.0f);
+    switch (lane)
+    {
+    case 0:
+        res = vfmaq_lane_f16(a, b, v, 0);
+        break;
+    case 1:
+        res = vfmaq_lane_f16(a, b, v, 1);
+        break;
+    case 2:
+        res = vfmaq_lane_f16(a, b, v, 2);
+        break;
+    case 3:
+        res = vfmaq_lane_f16(a, b, v, 3);
+        break;
+    default:
+        break;
+    }
     return res;
 }
 
-FORCE_INLINE __m128i _mm_cvtsi32_si128(int a)
+FORCE_INLINE __m128h _mm_fmadd_laneq_ph(__m128h a, __m128h b, __m128h v, const int lane)
 {
-    __m128i res;
-    res.vect_s32 = vsetq_lane_s32(a, vdupq_n_s32(0), 0);
+    assert(lane >= 0 && lane <= 7);
+    __m128h res = vdupq_n_f16(0.0f);
+    switch (lane)
+    {
+    case 0:
+        res = vfmaq_laneq_f16(a, b, v, 0);
+        break;
+    case 1:
+        res = vfmaq_laneq_f16(a, b, v, 1);
+        break;
+    case 2:
+        res = vfmaq_laneq_f16(a, b, v, 2);
+        break;
+    case 3:
+        res = vfmaq_laneq_f16(a, b, v, 3);
+        break;
+    case 4:
+        res = vfmaq_laneq_f16(a, b, v, 4);
+        break;
+    case 5:
+        res = vfmaq_laneq_f16(a, b, v, 5);
+        break;
+    case 6:
+        res = vfmaq_laneq_f16(a, b, v, 6);
+        break;
+    case 7:
+        res = vfmaq_laneq_f16(a, b, v, 7);
+        break;
+    default:
+        break;
+    }
     return res;
-}
-
-FORCE_INLINE int _mm_cvtsi128_si32(__m128i a)
-{
-    return vgetq_lane_s32(a.vect_s32, 0);
-}
-
-FORCE_INLINE __m128i _mm_packs_epi16(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s8 = vcombine_s8(vqmovn_s16(a.vect_s16), vqmovn_s16(b.vect_s16));
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_packs_epi32(__m128i a, __m128i b)
-{
-    __m128i res;
-    res.vect_s16 = vcombine_s16(vqmovn_s32(a.vect_s32), vqmovn_s32(b.vect_s32));
-    return res;
-}
-
-FORCE_INLINE int _mm_movemask_ps(__m128 a)
-{
-    __m128i res_m128i;
-    res_m128i.vect_u32 = vshrq_n_u32(vreinterpretq_u32_f32(a), 31);
-    res_m128i.vect_u64 = vsraq_n_u64(res_m128i.vect_u64, res_m128i.vect_u64, 31);
-    return (int)(vgetq_lane_u8(res_m128i.vect_u8, 0) | (vgetq_lane_u8(res_m128i.vect_u8, 8) << 2));
-}
-
-FORCE_INLINE int _mm_movemask_epi8(__m128i a)
-{
-    int res;
-    __asm__ __volatile__ (
-        "ushr %[a0].16b, %[a0].16b, #7          \n\t"
-        "usra %[a0].8h, %[a0].8h, #7            \n\t"
-        "usra %[a0].4s, %[a0].4s, #14           \n\t"
-        "usra %[a0].2d, %[a0].2d, #28           \n\t"
-        "ins %[a0].b[1], %[a0].b[8]             \n\t"
-        "umov %w[r], %[a0].h[0]"
-        :[r]"=r"(res), [a0]"+w"(a.vect_u8)
-        :
-        :
-    );
-    return res;
-}
-
-FORCE_INLINE __m128i _mm_shuffle_epi8(__m128i a,__m128i b)
-{
-    __m128i res;
-    uint8x16_t mask_and = vdupq_n_u8(0x8f);
-    res.vect_u8 = vqtbl1q_u8(a.vect_u8, vandq_u8(b.vect_u8, mask_and));
-    return res;
-}
-
-FORCE_INLINE void* _mm_malloc (size_t size, size_t align)
-{
-    void *ptr;
-    if (align == 1)
-        return malloc (size);
-    if (align == 2 || (sizeof (void *) == 8 && align == 4))
-        align = sizeof (void *);
-    if (posix_memalign (&ptr, align, size) == 0)
-        return ptr;
-    else
-        return NULL;
-}
-
-FORCE_INLINE void _mm_free (void * mem_addr)
-{
-    free(mem_addr);
-}
-
-FORCE_INLINE __m128i _mm_subs_epu8(__m128i a, __m128i b)
-{
-	__m128i res;
-	res.vect_u8 = vqsubq_u8(a.vect_u8, b.vect_u8);
-	return res;
-}
-
-FORCE_INLINE __m128i _mm_subs_epu16(__m128i a, __m128i b)
-{
-	__m128i res;
-	res.vect_u16 = vqsubq_u16(a.vect_u16, b.vect_u16);
-	return res;
-}
-
-FORCE_INLINE int _mm_extract_epi16(__m128i a, const int imm8)
-{
-	return a.vect_s16[imm8 & 0x7] & 0xffff;
-}
-
-FORCE_INLINE __m128i _mm_max_epi16(__m128i a, __m128i b)
-{
-	__m128i dst;
-	dst.vect_s16 = vmaxq_s16(a.vect_s16, b.vect_s16);
-	return dst;
-}
-
-FORCE_INLINE __m128i _mm_cmpgt_epi16(__m128i a, __m128i b)
-{
-	__m128i dst;
-	dst.vect_u16 = vcgtq_s16(a.vect_s16, b.vect_s16);
-	return dst;
 }
