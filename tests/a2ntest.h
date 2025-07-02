@@ -119,7 +119,7 @@ typedef enum {
     UT_MM512_EXTRACTF32x8_PS,
     UT_MM512_EXTRACTF64x4_PD,
     UT_MM512_MUL_EPI32,
-    //UT_MM512_MUL_EPU32,
+    UT_MM512_MUL_EPU32,
     UT_MM512_MUL_PD,
     UT_MM512_MUL_PS,
     UT_MM512_MUL_ROUND_PD,
@@ -237,7 +237,7 @@ typedef enum {
     UT_MM512_SRLI_EPI64,
     UT_MM512_STORE_SI512,
     UT_MM512_TEST_EPI8_MASK,
-    //UT_MM512_TEST_EPI32_MASK,
+    UT_MM512_TEST_EPI32_MASK,
     UT_MM512_TEST_EPI64_MASK,
     UT_MM512_UNPACKHI_EPI8,
     UT_MM512_UNPACKLO_EPI8,
@@ -262,13 +262,13 @@ typedef enum {
     UT_MM_SET1_EPI64X,
     UT_MM_SET1_PD,
     UT_MM_TESTZ_SI128,
-    //UT_MM256_CMP_PD,
-    //UT_MM256_CMP_PS,
-    //UT_MM512_CMP_PD_MASK,
-    //UT_MM512_CMP_PS_MASK,
-    //UT_MM_INSERT_EPI32,
+    UT_MM256_CMP_PD,
+    UT_MM256_CMP_PS,
+    UT_MM512_CMP_PD_MASK,
+    UT_MM512_CMP_PS_MASK,
+    UT_MM_INSERT_EPI32,
     UT_MM256_INSERT_EPI32,
-    //UT_MM256_INSERT_EPI64,
+    UT_MM256_INSERT_EPI64,
     UT_MM512_CASTPD128_PD512,
     UT_MM512_CASTPD512_PD128,
     UT_MM512_CASTPS128_PS512,
@@ -548,9 +548,9 @@ int test_mm512_div_epu32();
 int test_mm512_div_epu64();
 int test_mm512_div_round_ps();
 int test_mm512_div_round_pd();
-//int test_mm_insert_epi32();
+int test_mm_insert_epi32();
 int test_mm256_insert_epi32();
-//int test_mm256_insert_epi64();
+int test_mm256_insert_epi64();
 int test_mm512_castpd128_pd512();
 int test_mm512_castpd512_pd128();
 int test_mm512_castps128_ps512();

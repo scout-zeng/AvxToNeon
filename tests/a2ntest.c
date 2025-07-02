@@ -433,10 +433,10 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "MM512_TEST_EPI8_MASK";
             *flag = test_mm512_test_epi8_mask();
             break;
-        //case UT_MM512_TEST_EPI32_MASK:
-        //    ret = "MM512_TEST_EPI32_MASK";
-        //    *flag = test_mm512_test_epi32_mask();
-        //    break;
+        case UT_MM512_TEST_EPI32_MASK:
+            ret = "MM512_TEST_EPI32_MASK";
+            *flag = test_mm512_test_epi32_mask();
+            break;
         case UT_MM512_TEST_EPI64_MASK:
             ret = "MM512_TEST_EPI64_MASK";
             *flag = test_mm512_test_epi64_mask();
@@ -461,10 +461,10 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "MM512_MUL_EPI32";
             *flag = test_mm512_mul_epi32();
             break;
-        /*case UT_MM512_MUL_EPU32:
+        case UT_MM512_MUL_EPU32:
             ret = "MM512_MUL_EPU32";
             *flag = test_mm512_mul_epu32();
-            break;*/
+            break;
         case UT_MM512_MUL_PD:
             ret = "MM512_MUL_PD";
             *flag = test_mm512_mul_pd();
@@ -1114,22 +1114,22 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "MM512_PERMUTEXVAR_EPI32";
             *flag = test_mm512_permutexvar_epi32();
             break;
-        //case UT_MM256_CMP_PD:
-        //    ret = "MM256_CMP_PD";
-        //    *flag = test_mm256_cmp_pd();
-        //    break;
-        //case UT_MM256_CMP_PS:
-        //    ret = "MM256_CMP_PS";
-        //    *flag = test_mm256_cmp_ps();
-        //    break;
-        //case UT_MM512_CMP_PD_MASK:
-        //    ret = "MM512_CMP_PD_MASK";
-        //    *flag = test_mm512_cmp_pd_mask();
-        //    break;
-        //case UT_MM512_CMP_PS_MASK:
-        //    ret = "MM512_CMP_PS_MASK";
-        //    *flag = test_mm512_cmp_ps_mask();
-        //    break;
+        case UT_MM256_CMP_PD:
+            ret = "MM256_CMP_PD";
+            *flag = test_mm256_cmp_pd();
+            break;
+        case UT_MM256_CMP_PS:
+            ret = "MM256_CMP_PS";
+            *flag = test_mm256_cmp_ps();
+            break;
+        case UT_MM512_CMP_PD_MASK:
+            ret = "MM512_CMP_PD_MASK";
+            *flag = test_mm512_cmp_pd_mask();
+            break;
+        case UT_MM512_CMP_PS_MASK:
+            ret = "MM512_CMP_PS_MASK";
+            *flag = test_mm512_cmp_ps_mask();
+            break;
         case UT_MM_FMADD_PS:
             ret = "UT_MM_FMADD_PS";
             *flag = test_mm_fmadd_ps();
@@ -4771,109 +4771,109 @@ int test_mm512_inserti64x4()
     return comp_return(expect, &res, sizeof(__m512i));
 }
 
-//int test_mm256_cmp_pd()
-//{
-//    __m256d source1, source2, dest;
-//    int i;
-//    long long expect[4];
-//
-//    __m256d s1 = test_mm256_cmp_pd_data_model_unordered_data1;
-//    __m256d s2 = test_mm256_cmp_pd_data_model_unordered_data2;
-//    for (int j = 0; j < 32; j++) {
-//        MM256_CMP_PD(j, test_mm256_cmp_pd_data_model_unordered_ret[j][i], expect);
-//    }
-//
-//    s1 = test_mm256_cmp_pd_data_model_ordered_data1;
-//    s2 = test_mm256_cmp_pd_data_model_ordered_data2;
-//
-//    for (int j = 0; j < 32; j++) {
-//        MM256_CMP_PD(j, test_mm256_cmp_pd_data_model_ordered_ret[j][i], expect);
-//    }
-//    return TRUE;
-//}
+int test_mm256_cmp_pd()
+{
+    __m256d source1, source2, dest;
+    int i;
+    long long expect[4];
 
-//int test_mm256_cmp_ps()
-//{
-//    __m256 source1, source2, dest;
-//    int i;
-//    int expect[8];
-//
-//    __m256 s1 = test_mm256_cmp_ps_data_model_unordered_data1;
-//    __m256 s2 = test_mm256_cmp_ps_data_model_unordered_data2;
-//    for (int j = 0; j < 32; j++) {
-//        MM256_CMP_PS(j, test_mm256_cmp_ps_data_model_unordered_ret[j][i], expect);
-//    }
-//
-//    s1 = test_mm256_cmp_ps_data_model_ordered_data1;
-//    s2 = test_mm256_cmp_ps_data_model_ordered_data2;
-//
-//    for (int j = 0; j < 32; j++) {
-//        MM256_CMP_PS(j, test_mm256_cmp_ps_data_model_ordered_ret[j][i], expect);
-//    }
-//    return TRUE;
-//}
+    __m256d s1 = test_mm256_cmp_pd_data_model_unordered_data1;
+    __m256d s2 = test_mm256_cmp_pd_data_model_unordered_data2;
+    for (int j = 0; j < 32; j++) {
+        MM256_CMP_PD(j, test_mm256_cmp_pd_data_model_unordered_ret[j][i], expect);
+    }
 
-//int test_mm512_cmp_pd_mask()
-//{
-//    __m512d a, b;
-//    __mmask8 result[32];
-//
-//    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
-//        a.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data1.a + i * M128D_FLOAT64_NUM);
-//        b.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data1.b + i * M128D_FLOAT64_NUM);
-//    }
-//    __mmask8* expect = g_test_mm512_cmp_pd_mask_data1.expect;
-//    for (int i = 0; i < 32; i++) {
-//        result[i] = _mm512_cmp_pd_mask(a, b, i);
-//    }
-//    if (!comp_return(result, expect, sizeof(__mmask8) * 32)) {
-//        return FALSE;
-//    }
-//
-//    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
-//        a.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data2.a + i * M128D_FLOAT64_NUM);
-//        b.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data2.b + i * M128D_FLOAT64_NUM);
-//    }
-//    expect = g_test_mm512_cmp_pd_mask_data2.expect;
-//    for (int i = 0; i < 32; i++) {
-//        result[i] = _mm512_cmp_pd_mask(a, b, i);
-//    }
-//    if (!comp_return(result, expect, sizeof(__mmask8) * 32)) {
-//        return FALSE;
-//    }
-//    return TRUE;
-//}
+    s1 = test_mm256_cmp_pd_data_model_ordered_data1;
+    s2 = test_mm256_cmp_pd_data_model_ordered_data2;
 
-//int test_mm512_cmp_ps_mask()
-//{
-//    __m512 a, b;
-//    __mmask16 result[32];
-//
-//    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
-//        a.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data1.a + i * M128_FLOAT32_NUM);
-//        b.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data1.b + i * M128_FLOAT32_NUM);
-//    }
-//    __mmask16* expect = g_test_mm512_cmp_ps_mask_data1.expect;
-//    for (int i = 0; i < 32; i++) {
-//        result[i] = _mm512_cmp_ps_mask(a, b, i);
-//    }
-//    if (!comp_return(result, expect, sizeof(__mmask16) * 32)) {
-//        return FALSE;
-//    }
-//    
-//    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
-//        a.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data2.a + i * M128_FLOAT32_NUM);
-//        b.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data2.b + i * M128_FLOAT32_NUM);
-//    }
-//    expect = g_test_mm512_cmp_ps_mask_data2.expect;
-//    for (int i = 0; i < 32; i++) {
-//        result[i] = _mm512_cmp_ps_mask(a, b, i);
-//    }
-//    if (!comp_return(result, expect, sizeof(__mmask16) * 32)) {
-//        return FALSE;
-//    }
-//    return TRUE;
-//}
+    for (int j = 0; j < 32; j++) {
+        MM256_CMP_PD(j, test_mm256_cmp_pd_data_model_ordered_ret[j][i], expect);
+    }
+    return TRUE;
+}
+
+int test_mm256_cmp_ps()
+{
+    __m256 source1, source2, dest;
+    int i;
+    int expect[8];
+
+    __m256 s1 = test_mm256_cmp_ps_data_model_unordered_data1;
+    __m256 s2 = test_mm256_cmp_ps_data_model_unordered_data2;
+    for (int j = 0; j < 32; j++) {
+        MM256_CMP_PS(j, test_mm256_cmp_ps_data_model_unordered_ret[j][i], expect);
+    }
+
+    s1 = test_mm256_cmp_ps_data_model_ordered_data1;
+    s2 = test_mm256_cmp_ps_data_model_ordered_data2;
+
+    for (int j = 0; j < 32; j++) {
+        MM256_CMP_PS(j, test_mm256_cmp_ps_data_model_ordered_ret[j][i], expect);
+    }
+    return TRUE;
+}
+
+int test_mm512_cmp_pd_mask()
+{
+    __m512d a, b;
+    __mmask8 result[32];
+
+    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
+        a.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data1.a + i * M128D_FLOAT64_NUM);
+        b.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data1.b + i * M128D_FLOAT64_NUM);
+    }
+    __mmask8* expect = g_test_mm512_cmp_pd_mask_data1.expect;
+    for (int i = 0; i < 32; i++) {
+        result[i] = _mm512_cmp_pd_mask(a, b, i);
+    }
+    if (!comp_return(result, expect, sizeof(__mmask8) * 32)) {
+        return FALSE;
+    }
+
+    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
+        a.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data2.a + i * M128D_FLOAT64_NUM);
+        b.vect_f64[i] = vld1q_f64(g_test_mm512_cmp_pd_mask_data2.b + i * M128D_FLOAT64_NUM);
+    }
+    expect = g_test_mm512_cmp_pd_mask_data2.expect;
+    for (int i = 0; i < 32; i++) {
+        result[i] = _mm512_cmp_pd_mask(a, b, i);
+    }
+    if (!comp_return(result, expect, sizeof(__mmask8) * 32)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+int test_mm512_cmp_ps_mask()
+{
+    __m512 a, b;
+    __mmask16 result[32];
+
+    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
+        a.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data1.a + i * M128_FLOAT32_NUM);
+        b.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data1.b + i * M128_FLOAT32_NUM);
+    }
+    __mmask16* expect = g_test_mm512_cmp_ps_mask_data1.expect;
+    for (int i = 0; i < 32; i++) {
+        result[i] = _mm512_cmp_ps_mask(a, b, i);
+    }
+    if (!comp_return(result, expect, sizeof(__mmask16) * 32)) {
+        return FALSE;
+    }
+    
+    for (unsigned int i = 0; i < M512_M128_NUM; i++) {
+        a.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data2.a + i * M128_FLOAT32_NUM);
+        b.vect_f32[i] = vld1q_f32(g_test_mm512_cmp_ps_mask_data2.b + i * M128_FLOAT32_NUM);
+    }
+    expect = g_test_mm512_cmp_ps_mask_data2.expect;
+    for (int i = 0; i < 32; i++) {
+        result[i] = _mm512_cmp_ps_mask(a, b, i);
+    }
+    if (!comp_return(result, expect, sizeof(__mmask16) * 32)) {
+        return FALSE;
+    }
+    return TRUE;
+}
 
 int test_mm512_permutexvar_epi32()
 {
