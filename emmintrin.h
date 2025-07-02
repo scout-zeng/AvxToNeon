@@ -1025,12 +1025,30 @@ FORCE_INLINE __m128i _mm_cmpestrm(__m128i a, int la, __m128i b, int lb, const in
     return dst;
 }
 
-//FORCE_INLINE __m128i _mm_insert_epi32 (__m128i a, int i, const int imm8)
-//{
-//    assert(imm8 >= 0 && imm8 <= 3);
-//    a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, imm8);
-//    return a;
-//}
+FORCE_INLINE __m128i _mm_insert_epi32 (__m128i a, int i, const int imm8)
+{
+    assert(imm8 >= 0 && imm8 <= 3);
+    switch (imm8)
+    {
+    case 0:
+		a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, 0);
+		break;
+    case 1:
+        a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, 1);
+        break;
+    case 2:
+        a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, 2);
+        break;
+    case 3:
+        a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, 3);
+        break;
+    default:
+        // never do this
+        a.vect_s32 = vsetq_lane_s32(i, a.vect_s32, 0);
+        break;
+    }
+    return a;
+}
 
 FORCE_INLINE __m128 _mm_fmadd_ps(__m128 a, __m128 b, __m128 c)
 {

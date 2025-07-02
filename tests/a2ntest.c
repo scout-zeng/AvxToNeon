@@ -1058,18 +1058,18 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "MM_CMPESTRM";
             *flag = test_mm_cmpestrm();
             break;
-        //case UT_MM_INSERT_EPI32:
-        //    ret = "MM_INSERT_EPI32";
-        //    *flag = test_mm_insert_epi32();
-        //    break;
+        case UT_MM_INSERT_EPI32:
+            ret = "MM_INSERT_EPI32";
+            *flag = test_mm_insert_epi32();
+            break;
         case UT_MM256_INSERT_EPI32:
             ret = "MM256_INSERT_EPI32";
             *flag = test_mm256_insert_epi32();
             break;
-        //case UT_MM256_INSERT_EPI64:
-        //    ret = "MM256_INSERT_EPI64";
-        //    *flag = test_mm256_insert_epi64();
-        //    break;
+        case UT_MM256_INSERT_EPI64:
+            ret = "MM256_INSERT_EPI64";
+            *flag = test_mm256_insert_epi64();
+            break;
         case UT_MM512_CASTPD128_PD512:
             ret = "MM512_CASTPD128_PD512";
             *flag = test_mm512_castpd128_pd512();
@@ -4598,16 +4598,16 @@ int test_mm_cmpestrm()
     return comp_return(expect, &res, sizeof(__m128i));
 }
 
-//int test_mm_insert_epi32()
-//{
-//    __m128i a;
-//    int i = g_test_mm_insert_epi32_data.i;
-//    int32_t *expect = g_test_mm_insert_epi32_data.expect;
-//
-//    a.vect_s32 = vld1q_s32(g_test_mm_insert_epi32_data.a);
-//    __m128i res = _mm_insert_epi32(a, i, 3);
-//    return comp_return(expect, &res, sizeof(__m128i));
-//}
+int test_mm_insert_epi32()
+{
+    __m128i a;
+    int i = g_test_mm_insert_epi32_data.i;
+    int32_t *expect = g_test_mm_insert_epi32_data.expect;
+
+    a.vect_s32 = vld1q_s32(g_test_mm_insert_epi32_data.a);
+    __m128i res = _mm_insert_epi32(a, i, 3);
+    return comp_return(expect, &res, sizeof(__m128i));
+}
 
 int test_mm256_insert_epi32()
 {
@@ -4622,18 +4622,18 @@ int test_mm256_insert_epi32()
     return comp_return(expect, &res, sizeof(__m256i));
 }
 
-//int test_mm256_insert_epi64()
-//{
-//    __m256i a;
-//    int64_t i = g_test_mm256_insert_epi64_data.i;
-//    int64_t *expect = g_test_mm256_insert_epi64_data.expect;
-//
-//    for (unsigned int j = 0; j < M256_M128_NUM; j++) {
-//        a.vect_s64[j] = vld1q_s64(g_test_mm256_insert_epi64_data.a + j * M128I_INT64_NUM);
-//    }
-//    __m256i res = _mm256_insert_epi64(a, i, 3);
-//    return comp_return(expect, &res, sizeof(__m256i));
-//}
+int test_mm256_insert_epi64()
+{
+    __m256i a;
+    int64_t i = g_test_mm256_insert_epi64_data.i;
+    int64_t *expect = g_test_mm256_insert_epi64_data.expect;
+
+    for (unsigned int j = 0; j < M256_M128_NUM; j++) {
+        a.vect_s64[j] = vld1q_s64(g_test_mm256_insert_epi64_data.a + j * M128I_INT64_NUM);
+    }
+    __m256i res = _mm256_insert_epi64(a, i, 3);
+    return comp_return(expect, &res, sizeof(__m256i));
+}
 
 int test_mm512_castpd128_pd512()
 {
