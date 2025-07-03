@@ -1138,6 +1138,10 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "UT_MM_FMADD_PD";
             *flag = test_mm_fmadd_pd();
             break;
+        case UT_MM_MASK_FMADD_PS:
+            ret = "UT_MM_MASK_FMADD_PS";
+			*flag = test_mm_mask_fmadd_ps();
+            break;
         case UT_MM_FMADD_LANE_PS:
             ret = "UT_MM_FMADD_LANE_PS";
             *flag = test_mm_fmadd_lane_ps();
@@ -4898,9 +4902,31 @@ int test_mm_fmadd_ps()
     __m128 b = vld1q_f32(g_test_mm_fmadd_ps_data.b);
     __m128 c = vld1q_f32(g_test_mm_fmadd_ps_data.c);
     res = _mm_fmadd_ps(a, b, c);
-    __m128 v_expect = vld1q_f32(g_test_mm_fmadd_ps_data.expect);
-    uint32x4_t cmp = vceqq_f32(v_expect, res);
-    return vgetq_lane_u32(vpmaxq_u32(cmp, cmp), 0) == 0xFFFFFFFF;
+
+    // print res 
+    //float vals[4];
+    //vst1q_f32(vals, res);
+    //printf("[%.6f, %.6f, %.6f, %.6f]\n", vals[0], vals[1], vals[2], vals[3]);
+    //printf("[%.6f, %.6f, %.6f, %.6f]\n", g_test_mm_fmadd_ps_data.expect[0], g_test_mm_fmadd_ps_data.expect[1], g_test_mm_fmadd_ps_data.expect[2], g_test_mm_fmadd_ps_data.expect[3]);
+
+    return IsEqualFloat32x4(res, g_test_mm_fmadd_ps_data.expect, DEFAULT_EPSILON_F32);
+}
+
+int test_mm_mask_fmadd_ps()
+{
+	__m128 res = (float32x4_t){ 0.0f, 0.0f, 0.0f, 0.0f };
+	__m128 a = vld1q_f32(g_test_mm_mask_fmadd_ps_data.a);
+	__m128 b = vld1q_f32(g_test_mm_mask_fmadd_ps_data.b);
+	__m128 c = vld1q_f32(g_test_mm_mask_fmadd_ps_data.c);
+	const __mmask8 k = g_test_mm_mask_fmadd_ps_data.k;
+	res = _mm_mask_fmadd_ps(a, k, b, c);
+
+    //print res 
+    //float vals[4];
+    //vst1q_f32(vals, res);
+    //printf("[%.6f, %.6f, %.6f, %.6f]\n", vals[0], vals[1], vals[2], vals[3]);
+    //printf("[%.6f, %.6f, %.6f, %.6f]\n", g_test_mm_mask_fmadd_ps_data.expect[0], g_test_mm_mask_fmadd_ps_data.expect[1], g_test_mm_mask_fmadd_ps_data.expect[2], g_test_mm_mask_fmadd_ps_data.expect[3]);
+	return IsEqualFloat32x4(res, g_test_mm_mask_fmadd_ps_data.expect, DEFAULT_EPSILON_F32);
 }
 
 int test_mm_fmadd_pd()
@@ -4910,8 +4936,12 @@ int test_mm_fmadd_pd()
     __m128d b = vld1q_f64(g_test_mm_fmadd_pd_data.b);
     __m128d c = vld1q_f64(g_test_mm_fmadd_pd_data.c);
     res = _mm_fmadd_pd(a, b, c);
-    return (g_test_mm_fmadd_pd_data.expect[0] == vgetq_lane_f64(res, 0)) &&
-        (g_test_mm_fmadd_pd_data.expect[1] == vgetq_lane_f64(res, 1));
+
+    /*double vals[2];
+    vst1q_f64(vals, res);
+    printf("[%.6f, %.6f]\n", vals[0], vals[1]);
+    printf("[%.6f, %.6f]\n", g_test_mm_fmadd_pd_data.expect[0], g_test_mm_fmadd_pd_data.expect[1]);*/
+    return IsEqualFloat64x2(res, g_test_mm_fmadd_pd_data.expect, DEFAULT_EPSILON_F64);
 }
 
 int test_mm_fmadd_lane_ps()

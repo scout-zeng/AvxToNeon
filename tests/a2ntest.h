@@ -282,6 +282,7 @@ typedef enum {
     UT_MM512_PERMUTEXVAR_EPI32,
     UT_MM_FMADD_PS,
     UT_MM_FMADD_PD,
+    UT_MM_MASK_FMADD_PS,
     UT_MM_FMADD_LANE_PS,
     UT_MM_FMADD_LANE_PD,
     UT_MM_FMADD_LANEQ_PS,
@@ -568,6 +569,7 @@ int test_mm512_cmp_pd_mask();
 int test_mm512_cmp_ps_mask();
 int test_mm_fmadd_ps();
 int test_mm_fmadd_pd();
+int test_mm_mask_fmadd_ps();
 int test_mm_fmadd_lane_ps();
 int test_mm_fmadd_lane_pd();
 int test_mm_fmadd_laneq_ps();
