@@ -2848,11 +2848,16 @@ typedef struct {
     __mmask16 expect[32];
 } test_mm512_cmp_ps_mask_data_model;
 
-#define MY_NAN (0)
+// This is an workaround to make NAN available on Windows MSVC
+#ifdef NAN
+#undef NAN
+#define NAN ((float)(0.0f/0.0f))
+#endif // NAN
+
 static test_mm512_cmp_ps_mask_data_model g_test_mm512_cmp_ps_mask_data1 = {
-    {-3.200000, MY_NAN, 89.769997, 65.000000, 3336.399902, -98.000000, 1002.000000, -88.653999, MY_NAN, 0.000000, \
-     -12.500000, 6678.346191, 453.345001, MY_NAN, -477.345001, 2134.333008,},
-    {-78.000000, MY_NAN, -6.200000, 2.000000, 41.200001, MY_NAN, 95.300003, -88.653999, MY_NAN, 88.690002, -100.639999, MY_NAN, \
+    {-3.200000, NAN, 89.769997, 65.000000, 3336.399902, -98.000000, 1002.000000, -88.653999, NAN, 0.000000, \
+     -12.500000, 6678.346191, 453.345001, NAN, -477.345001, 2134.333008,},
+    {-78.000000, NAN, -6.200000, 2.000000, 41.200001, NAN, 95.300003, -88.653999, NAN, 88.690002, -100.639999, NAN, \
      6678.346191, 856.435730, 6678.346191, 41124.238281},
     {128, 53760, 53888, 10530, 65407, 11775, 11647, 55005, 10658, 64290, 64418, 0, 54877, 1245, 1117, 65535, 128, \
      53760, 53888, 10530, 65407, 11775, 11647, 55005, 10658, 64290, 64418, 0, 54877, 1245, 1117, 65535}
@@ -2872,8 +2877,8 @@ typedef struct {
     __mmask8 expect[32];
 } test_mm512_cmp_pd_mask_data_model;
 static test_mm512_cmp_pd_mask_data_model g_test_mm512_cmp_pd_mask_data1 = {
-    {-3.200000, 99.378500, 89.770000, 65.000000, MY_NAN, -88.654000, MY_NAN, 0.000000},
-    {MY_NAN, 15.600000, -6.200000, 2.000000, 41.200000, 14.000000, MY_NAN, -88.654000},
+    {-3.200000, 99.378500, 89.770000, 65.000000, NAN, -88.654000, NAN, 0.000000},
+    {NAN, 15.600000, -6.200000, 2.000000, 41.200000, 14.000000, NAN, -88.654000},
     {0, 32, 32, 81, 255, 223, 223, 174, 81, 113, 113, 0, 174, 142, 142, 255, 0, 32, 32, 81, 255, 223, 223, 174, 81, \
      113, 113, 0, 174, 142, 142, 255}
 };
@@ -2884,8 +2889,8 @@ static test_mm512_cmp_pd_mask_data_model g_test_mm512_cmp_pd_mask_data2 = {
      0, 255, 159, 159, 255}
 };
 
-static __m256d test_mm256_cmp_pd_data_model_unordered_data1 = {MY_NAN, 6678.346, 453.345635, MY_NAN};
-static __m256d test_mm256_cmp_pd_data_model_unordered_data2 = {MY_NAN, 6678.346, MY_NAN, 856.43576};
+static __m256d test_mm256_cmp_pd_data_model_unordered_data1 = {NAN, 6678.346, 453.345635, NAN};
+static __m256d test_mm256_cmp_pd_data_model_unordered_data2 = {NAN, 6678.346, NAN, 856.43576};
 static long long test_mm256_cmp_pd_data_model_unordered_ret[32][4] = {
     {0, -1, 0, 0},    {0, 0, 0, 0},    {0, -1, 0, 0},    {-1, 0, -1, -1},  {-1, 0, -1, -1},  {-1, -1, -1, -1},
     {-1, 0, -1, -1},  {0, -1, 0, 0},   {-1, -1, -1, -1}, {-1, 0, -1, -1},  {-1, -1, -1, -1}, {0, 0, 0, 0},
@@ -2903,10 +2908,10 @@ static long long test_mm256_cmp_pd_data_model_ordered_ret[32][4] = {
     {0, -1, 0, 0},   {-1, 0, -1, 0},   {-1, -1, -1, 0}, {0, 0, 0, 0},     {-1, 0, -1, -1}, {0, -1, 0, -1},
     {0, 0, 0, -1},   {-1, -1, -1, -1}};
 
-static __m256 test_mm256_cmp_ps_data_model_unordered_data1 = {77.690002, MY_NAN, 0.000000, -12.500000, MY_NAN, 6678.346191, \
-                                                              453.345001, MY_NAN};
-static __m256 test_mm256_cmp_ps_data_model_unordered_data2 = {-7.690000, 88.690002, -100.639999, -13.778000, MY_NAN, \
-                                                              6678.346191, MY_NAN, 856.778015};
+static __m256 test_mm256_cmp_ps_data_model_unordered_data1 = {77.690002, NAN, 0.000000, -12.500000, NAN, 6678.346191, \
+                                                              453.345001, NAN};
+static __m256 test_mm256_cmp_ps_data_model_unordered_data2 = {-7.690000, 88.690002, -100.639999, -13.778000, NAN, \
+                                                              6678.346191, NAN, 856.778015};
 static int test_mm256_cmp_ps_data_model_unordered_ret[32][8] = {
     {0, 0, 0, 0, 0, -1, 0, 0},        {0, 0, 0, 0, 0, 0, 0, 0},        {0, 0, 0, 0, 0, -1, 0, 0}, 
     {0, -1, 0, 0, -1, 0, -1, -1},     {-1, -1, -1, -1, -1, 0, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1}, 
@@ -2978,6 +2983,21 @@ static test_mm_fmadd_pd_model g_test_mm_fmadd_pd_data = {
     {3.3, 4.56},
     {0.0, 2.0},
     {3.63, 12.032}
+};
+
+typedef struct {
+    double a[2];
+    unsigned char k;
+    double b[2];
+    double c[2];
+    double expect[2];
+} test_mm_mask_fmadd_pd_model;
+static test_mm_mask_fmadd_pd_model g_test_mm_mask_fmadd_pd_data = {
+    {1.1, 2.2},
+    0b01,
+    {3.3, 4.56},
+    {0.0, 2.0},
+    {3.63, 2.2}
 };
 
 typedef struct {

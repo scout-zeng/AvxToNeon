@@ -1078,6 +1078,17 @@ FORCE_INLINE __m128d _mm_fmadd_pd(__m128d a, __m128d b, __m128d c)
     return vfmaq_f64(c, a, b);
 }
 
+FORCE_INLINE __m128d _mm_mask_fmadd_pd(__m128d a, __mmask8 k, __m128d b, __m128d c)
+{
+	assert(k <= 0x3);
+	uint64_t m0 = (k & 0x1) ? 0xFFFFFFFFFFFFFFFF : 0;
+	uint64_t m1 = (k & 0x2) ? 0xFFFFFFFFFFFFFFFF : 0;
+	uint64x2_t mask = (uint64x2_t){ m0, m1 };
+	float64x2_t muladd = vfmaq_f64(c, a, b);
+	float64x2_t result = vbslq_f64(mask, muladd, a);
+	return result;
+}
+
 
 FORCE_INLINE __m128 _mm_fmadd_lane_ps(__m128 a, __m128 b, float32x2_t v, const int lane)
 {

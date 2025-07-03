@@ -1142,6 +1142,10 @@ const char *RunTest(InstructionTest test, int *flag)
             ret = "UT_MM_MASK_FMADD_PS";
 			*flag = test_mm_mask_fmadd_ps();
             break;
+        case UT_MM_MASK_FMADD_PD:
+            ret = "UT_MM_MASK_FMADD_PD";
+            *flag = test_mm_mask_fmadd_pd();
+            break;
         case UT_MM_FMADD_LANE_PS:
             ret = "UT_MM_FMADD_LANE_PS";
             *flag = test_mm_fmadd_lane_ps();
@@ -4861,6 +4865,7 @@ int test_mm512_cmp_ps_mask()
     for (int i = 0; i < 32; i++) {
         result[i] = _mm512_cmp_ps_mask(a, b, i);
     }
+
     if (!comp_return(result, expect, sizeof(__mmask16) * 32)) {
         return FALSE;
     }
@@ -4942,6 +4947,21 @@ int test_mm_fmadd_pd()
     printf("[%.6f, %.6f]\n", vals[0], vals[1]);
     printf("[%.6f, %.6f]\n", g_test_mm_fmadd_pd_data.expect[0], g_test_mm_fmadd_pd_data.expect[1]);*/
     return IsEqualFloat64x2(res, g_test_mm_fmadd_pd_data.expect, DEFAULT_EPSILON_F64);
+}
+
+int test_mm_mask_fmadd_pd()
+{
+	__m128d res = vdupq_n_f64(0.0);
+	__m128d a = vld1q_f64(g_test_mm_mask_fmadd_pd_data.a);
+	__m128d b = vld1q_f64(g_test_mm_mask_fmadd_pd_data.b);
+	__m128d c = vld1q_f64(g_test_mm_mask_fmadd_pd_data.c);
+	const __mmask8 k = g_test_mm_mask_fmadd_pd_data.k;
+	res = _mm_mask_fmadd_pd(a, k, b, c);
+	/*double vals[2];
+	vst1q_f64(vals, res);
+	printf("[%.6f, %.6f]\n", vals[0], vals[1]);
+	printf("[%.6f, %.6f]\n", g_test_mm_mask_fmadd_pd_data.expect[0], g_test_mm_mask_fmadd_pd_data.expect[1]);*/
+	return IsEqualFloat64x2(res, g_test_mm_mask_fmadd_pd_data.expect, DEFAULT_EPSILON_F64);
 }
 
 int test_mm_fmadd_lane_ps()
