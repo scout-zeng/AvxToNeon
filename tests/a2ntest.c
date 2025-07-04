@@ -2869,7 +2869,6 @@ int test_mm512_test_epi8_mask()
         mb.vect_s8[iCount] = vld1q_s8(b + iCount * 16);
     }
     __mmask64 res = _mm512_test_epi8_mask(ma, mb);
-    printf("res:%llu exp:%llu\n", res, expect);
     return (res == expect);
 }
 
